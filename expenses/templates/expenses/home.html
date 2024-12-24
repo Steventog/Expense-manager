@@ -1,0 +1,68 @@
+{% extends "expenses/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="card-title">Résumé du mois</h2>
+                    {% if budget %}
+                        <p>Budget: {{ budget.montant }}€</p>
+                        <p>Dépenses totales: {{ total_expenses }}€</p>
+                        <p>Reste: {{ remaining_budget }}€</p>
+                        <div class="progress">
+                            <div class="progress-bar {% if remaining_budget < 0 %}bg-danger{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {% widthratio total_expenses budget.montant 100 %}%">
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>Aucun budget défini pour ce mois.</p>
+                        <a href="{% url 'add_budget' %}" class="btn btn-primary">Définir un budget</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Dépenses récentes</h2>
+                    {% if expenses %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Nom</th>
+                                        <th>Montant</th>
+                                        <th>Image</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for expense in expenses %}
+                                        <tr>
+                                            <td>{{ expense.date }}</td>
+                                            <td>{{ expense.nom }}</td>
+                                            <td>{{ expense.montant }}€</td>
+                                            <td>
+                                                {% if expense.image %}
+                                                    <img src="{{ expense.image.url }}" alt="Reçu" style="max-height: 50px;">
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>Aucune dépense enregistrée ce mois-ci.</p>
+                    {% endif %}
+                    <a href="{% url 'add_expense' %}" class="btn btn-primary">Ajouter une dépense</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

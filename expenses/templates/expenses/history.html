@@ -1,0 +1,90 @@
+{% extends "expenses/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title">Historique des dépenses</h2>
+                    
+                    <!-- Filtres -->
+                    <form method="get" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <select name="year" class="form-select" onchange="this.form.submit()">
+                                    <option value="">Toutes les années</option>
+                                    {% for date in years_months|dictsortreversed:"year" %}
+                                        <option value="{{ date|date:'Y' }}" {% if selected_year == date|date:'Y' %}selected{% endif %}>
+                                            {{ date|date:'Y' }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <select name="month" class="form-select" onchange="this.form.submit()">
+                                    <option value="">Tous les mois</option>
+                                    {% for date in years_months %}
+                                        <option value="{{ date|date:'m' }}" {% if selected_month == date|date:'m' %}selected{% endif %}>
+                                            {{ date|date:'F' }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Résumé -->
+                    <div class="alert {% if budget and total > budget.montant %}alert-danger{% else %}alert-info{% endif %} mb-4">
+                        <h4>Résumé de la période</h4>
+                        <p>Total des dépenses : {{ total }}€</p>
+                        {% if budget %}
+                            <p>Budget : {{ budget.montant }}€</p>
+                            {% with difference=budget.montant|add:"-"|add:total %}
+                                <p>Différence : {{ difference }}€</p>
+                            {% endwith %}
+                        {% endif %}
+                    </div>
+
+                    <!-- Liste des dépenses -->
+                    {% if expenses %}
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Nom</th>
+                                        <th>Montant</th>
+                                        <th>Image</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for expense in expenses %}
+                                        <tr>
+                                            <td>{{ expense.date|date:"d/m/Y" }}</td>
+                                            <td>{{ expense.nom }}</td>
+                                            <td>{{ expense.montant }}€</td>
+                                            <td>
+                                                {% if expense.image %}
+                                                    <img src="{{ expense.image.url }}" alt="Reçu" style="max-height: 50px;" 
+                                                         onclick="window.open(this.src)" style="cursor: pointer;">
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-info">
+                                        <td colspan="2"><strong>Total</strong></td>
+                                        <td colspan="2"><strong>{{ total }}€</strong></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p>Aucune dépense trouvée pour cette période.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
