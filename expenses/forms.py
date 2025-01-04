@@ -9,7 +9,13 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
-
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Désactiver les messages d'aide pour tous les champs
+        for field_name, field in self.fields.items():
+            field.help_text = None
+            
 class BudgetForm(forms.ModelForm):
     class Meta:
         model = Budget
