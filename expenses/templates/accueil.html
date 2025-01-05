@@ -16,39 +16,13 @@
   <!-- Main CSS File -->
   <link href="static/assets/css/main.css" rel="stylesheet">
 </head>
-<style>
-  .header-container {
-    width: 100%; /* Assurez-vous que la largeur est fixée */
-    overflow: hidden; /* Cache tout ce qui dépasse la zone visible */
-    position: relative; /* Nécessaire pour le positionnement interne */
-    height: 50px; /* Fixez une hauteur pour la barre */
-    display: flex;
-    align-items: center; /* Centre verticalement le contenu */
-    background-color: #f8f9fa; /* Optionnel : couleur de fond */
-    border: 1px solid #ddd; /* Optionnel : bordure */
-  }
-
-  .marquee {
-    white-space: nowrap; /* Empêche le texte de revenir à la ligne */
-    display: inline-block; /* Nécessaire pour l'animation */
-    animation: marquee 10s linear infinite; /* Animation pour faire défiler */
-  }
-
-  @keyframes marquee {
-    0% {
-      transform: translateX(100%); /* Le texte commence hors écran à droite */
-    }
-    100% {
-      transform: translateX(-100%); /* Le texte défile jusqu'à disparaître à gauche */
-    }
-  }
-</style>
 
 
 <body class="index-page">
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-        <h1 class="marquee">Bienvenue sur Expense Manager — Gérez vos finances en toute simplicité</h1>
+      <h1 class="sitename"> Expense Manager </h1>
+      <a class="btn-getstarted" href="#">start</a>
     </div>
   </header>
 
@@ -59,7 +33,10 @@
         <div class="row align-items-center">
           <div class="col-lg-6">
             <div class="hero-content" data-aos="fade-up" data-aos-delay="200">
-
+              <div class="company-badge mb-4">
+                <i class="bi bi-gear-fill me-2"></i>
+                Controle tes depenses
+              </div>
               <h1 class="mb-4">
                 Commencer par bien <br>
                 Gerer vos budget et <br>
@@ -79,7 +56,9 @@
 
           <div class="col-lg-6">
             <div class="hero-image" data-aos="zoom-out" data-aos-delay="300">
-              <img src="static/assets/img/1.png" alt="Hero Image" class="img-fluid">
+              <img src="static/assets/img/cap.png" alt="Hero Image" class="img-fluid">
+              
+
             </div>
           </div>
         </div>
