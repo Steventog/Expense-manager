@@ -6,6 +6,10 @@ from .models import Budget, Depense
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
+from django.shortcuts import render
+
+def accueil(request):
+    return render(request, 'accueil.html')
 
 def register(request):
     if request.method == 'POST':
