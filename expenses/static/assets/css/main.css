@@ -136,15 +136,38 @@ h6 {
     padding-top: 10px;
   }
 
+  .header {
+    height: 60px; /* Hauteur fixe pour la barre */
+    line-height: 60px; /* Centrage vertical du contenu */
+    overflow: hidden; /* Empêche le débordement */
+    padding: 5px 0; /* Ajustez la valeur selon vos besoins */
+    
+  }
+  
+  .header-logo {
+    max-height: 40px; /* Limite la hauteur du logo */
+    width: auto; /* Maintient les proportions */
+    object-fit: contain; /* Ajuste le logo dans l'espace disponible */
+    margin-right: 2px; /* Réduit l'espace entre le logo et le texte */
+    
+  }
+  
   .header .header-container {
-    margin-left: 10px;
-    margin-right: 10px;
-    padding: 10px 5px 10px 15px;
+    
+    padding: 5px 25px; /* Gardez cette valeur constante */
   }
-
-  .header .logo {
-    order: 1;
+  
+  .header-container {
+    display: flex;
+    align-items: center; /* Assurez-vous que les éléments sont centrés verticalement */
+}
+  
+  .sitename {
+    font-size: 20px; /* Taille du texte adaptée à la barre */
+    margin: 0; /* Supprime les marges par défaut */
   }
+  
+  
 
   .header .btn-getstarted {
     order: 2;
@@ -270,12 +293,24 @@ h6 {
   position: relative;
   text-align: center;
   z-index: 1;
+  overflow: hidden !important;
+
+  
 }
 
 .hero .hero-image img {
-  max-width: 100%;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optionnel : ajoute une ombre douce */
+  border-radius: 50px !important;
+}
+
+.test-image {
+  border-radius: 20px;
+  width: 100%;
   height: auto;
 }
+
 
 .hero .customers-badge {
   position: absolute;
