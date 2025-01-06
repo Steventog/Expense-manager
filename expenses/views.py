@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -97,6 +98,14 @@ def history(request):
         expenses = expenses.filter(date__year=selected_year)
     if selected_month:
         expenses = expenses.filter(date__month=selected_month)
+
+    # Recherche par nom ou montant
+    search_query = request.GET.get('search', '')
+    if search_query:
+        expenses = expenses.filter(
+            Q(nom__icontains=search_query) |
+            Q(montant__icontains=search_query)
+        )
 
     # Order by date
     expenses = expenses.order_by('-date')

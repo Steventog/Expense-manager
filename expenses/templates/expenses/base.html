@@ -81,6 +81,7 @@
             {% if user.is_authenticated %}
                 <div class="collapse navbar-collapse justify-content-end ml-3" id="navbarSupportedContent">
                     <!-- Filtres d'années et de mois -->
+                    {% comment %}
                     <form method="get" action="" class="d-flex">
                         <select name="year" class="form-select mx-2" onchange="this.form.submit()">
                             <option value="">Toutes les années</option>
@@ -105,6 +106,7 @@
                         <input class="form-control me-2" type="search" name="search" placeholder="Nom ou prix" aria-label="Search" value="{{ request.GET.search }}">
                         <button class="btn btn-outline-success" type="submit">Rechercher</button>
                     </form>
+                    {% endcomment %}
         
                     <!-- Utilisateur -->
                     <div class="navbar-nav nav-item ">
