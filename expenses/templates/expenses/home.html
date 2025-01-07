@@ -1,116 +1,134 @@
-{% extends "expenses/base.html" %}
-{% load crispy_forms_tags static %}
+{% extends "expenses/base.html" %} {% load crispy_forms_tags static %} 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="mb-4">Dashboard</h2>
-    
-    <!-- Section Cards -->
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card text-center shadow-sm">
-                <a href="{% url 'add_expense' %}" class="text-decoration-none">
-                    <div class="card-body">
-                        <img src="{% static 'images/dollars.png' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
-                        <h5 class="card-title">Nouvelle Dépense</h5>
-                    </div>
-                </a>
-            </div>
-        </div>
-        <div class="col-md-6 mb-4">
-            <div class="card text-center shadow-sm">
-                <a href="{% url 'add_budget' %}" class="text-decoration-none">
-                    <div class="card-body">
-                        <img src="{% static 'images/dollars.png' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
-                        <h5 class="card-title">Budget</h5>
-                    </div>
-                </a>
-            </div>
-        </div>
-    </div>
+  <h2 class="mb-4">Dashboard</h2>
 
-    <!-- Section Résumé du Mois -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow-sm mb-4">
-                <div class="card-body">
-                    <h2 class="card-title mb-4">Résumé du mois</h2>
-                    {% if budget %}
-                    <table class="table table-bordered text-center">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Total Dépenses</th>
-                                <th>Budget</th>
-                                <th>Reste</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>${{ total_expenses }}</td>
-                                <td class="text-success">${{ budget.montant }}</td>
-                                <td class="{% if remaining_budget < 0 %}text-danger{% else %}text-success{% endif %}">${{ remaining_budget }}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="progress" style="height: 12px;">
-                        <div 
-                            class="progress-bar {% if remaining_budget < 0 %}bg-danger{% else %}bg-success{% endif %}" 
-                            role="progressbar" 
-                            style="width: {% widthratio total_expenses budget.montant 100 %}%;"
-                            aria-valuenow="{{ total_expenses }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="{{ budget.montant }}">
-                        </div>
-                    </div>
-                    {% else %}
-                    <p class="text-muted mt-3">Aucun budget défini pour ce mois.</p>
-                    <a href="{% url 'add_budget' %}" class="btn btn-primary">Définir un budget</a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+  <!-- Section Cards -->
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card text-center shadow-sm">
+        <a href="{% url 'add_expense' %}" class="text-decoration-none">
+          <div class="card-body">
+            <img
+              src="{% static 'images/dollars.png' %}"
+              alt="Dollar"
+              class="me-2 mb-3"
+              style="width: 50px; height: 50px"
+            />
+            <h5 class="card-title">Nouvelle Dépense</h5>
+          </div>
+        </a>
+      </div>
     </div>
+    <div class="col-md-6 mb-4">
+      <div class="card text-center shadow-sm">
+        <a href="{% url 'add_budget' %}" class="text-decoration-none">
+          <div class="card-body">
+            <img
+              src="{% static 'images/dollars.png' %}"
+              alt="Dollar"
+              class="me-2 mb-3"
+              style="width: 50px; height: 50px"
+            />
+            <h5 class="card-title">Budget</h5>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
 
-    <!-- Section Dépenses Récentes -->
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h2 class="card-title mb-4">Dépenses récentes</h2>
-                    {% if expenses %}
-                    <div class="table-responsive">
-                        <table class="table table-bordered text-center">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Nom</th>
-                                    <th>Montant</th>
-                                    <th>Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for expense in expenses %}
-                                <tr>
-                                    <td>
-                                        {% if expense.image %}
-                                        <img src="{{ expense.image.url }}" alt="Reçu" style="max-height: 50px;">
-                                        {% else %}
-                                        <span class="text-muted">Pas d'image</span>
-                                        {% endif %}
-                                    </td>
-                                    <td>{{ expense.nom }}</td>
-                                    <td>{{ expense.montant }}€</td>
-                                    <td>{{ expense.date }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <p class="text-muted">Aucune dépense enregistrée ce mois-ci.</p>
-                    {% endif %}
-                </div>
-            </div>
+  <!-- Section Résumé du Mois -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h2 class="card-title mb-4">Résumé du mois</h2>
+          {% if budget %}
+          <table class="table table-bordered text-center">
+            <thead class="table-light">
+              <tr>
+                <th>Total Dépenses</th>
+                <th>Budget</th>
+                <th>Reste</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>${{ total_expenses }}</td>
+                <td class="text-success">${{ budget.montant }}</td>
+                <td
+                  class="{% if remaining_budget < 0 %}text-danger{% else %}text-success{% endif %}"
+                >
+                  ${{ remaining_budget }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="progress" style="height: 12px">
+            <div
+              class="progress-bar {% if remaining_budget < 0 %}bg-danger{% else %}bg-success{% endif %}"
+              role="progressbar"
+              aria-valuenow="{{ total_expenses }}"
+              aria-valuemin="0"
+              aria-valuemax="{{ budget.montant }}"
+            ></div>
+          </div>
+          {% else %}
+          <p class="text-muted mt-3">Aucun budget défini pour ce mois.</p>
+          <a href="{% url 'add_budget' %}" class="btn btn-primary"
+            >Définir un budget</a
+          >
+          {% endif %}
         </div>
+      </div>
     </div>
+  </div>
+
+  <!-- Section Dépenses Récentes -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title mb-4">Dépenses récentes</h2>
+          {% if expenses %}
+          <div class="table-responsive">
+            <table class="table table-bordered text-center">
+              <thead class="table-light">
+                <tr>
+                  <th>Image</th>
+                  <th>Nom</th>
+                  <th>Montant</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for expense in expenses %}
+                <tr>
+                  <td>
+                    {% if expense.image %}
+                    <img
+                      src="{{ expense.image.url }}"
+                      alt="Reçu"
+                      style="max-height: 50px"
+                    />
+                    {% else %}
+                    <span class="text-muted">Pas d'image</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ expense.nom }}</td>
+                  <td>{{ expense.montant }}€</td>
+                  <td>{{ expense.date }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <p class="text-muted">Aucune dépense enregistrée ce mois-ci.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

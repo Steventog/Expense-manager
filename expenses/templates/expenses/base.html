@@ -120,9 +120,9 @@
     </nav>
     
     <!-- Sidebar -->
+    {% if user.is_authenticated %}
     <div class="sidebar bg-light shadow p-3">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-            {% if user.is_authenticated %}
                 <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'home' %}">
                     <img src="{% static 'icons/home.svg' %}" alt="Dashboard" class="me-2" style="width: 20px; height: 20px;">
                     <span>Dashboard</span>
@@ -153,16 +153,9 @@
                         Déconnexion
                     </button>
                 </form>
-            {% else %}
-                <a class="nav-link mb-2 p-3 rounded-3 hover-shadow" href="{% url 'register' %}">
-                    Inscription
-                </a>
-                <a class="nav-link mb-2 p-3 rounded-3 hover-shadow" href="{% url 'login' %}">
-                    Connexion
-                </a>
-            {% endif %}
+            </div>
         </div>
-    </div>
+        {% endif %}
     
     
     

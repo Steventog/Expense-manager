@@ -1,96 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Expense Manager</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
 
-<head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>Expense Manager</title>
-  <meta name="description" content="">
-  <meta name="keywords" content="">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-  <!-- Vendor CSS Files -->
-  <link href="static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <!-- Main CSS File -->
-  <link href="static/assets/css/main.css" rel="stylesheet">
-</head>
-<style>
-  .header-container {
-    width: 100%; /* Assurez-vous que la largeur est fixée */
-    overflow: hidden; /* Cache tout ce qui dépasse la zone visible */
-    position: relative; /* Nécessaire pour le positionnement interne */
-    height: 50px; /* Fixez une hauteur pour la barre */
-    display: flex;
-    align-items: center; /* Centre verticalement le contenu */
-    background-color: #f8f9fa; /* Optionnel : couleur de fond */
-    border: 1px solid #ddd; /* Optionnel : bordure */
-  }
-
-  .marquee {
-    white-space: nowrap; /* Empêche le texte de revenir à la ligne */
-    display: inline-block; /* Nécessaire pour l'animation */
-    animation: marquee 10s linear infinite; /* Animation pour faire défiler */
-  }
-
-  @keyframes marquee {
-    0% {
-      transform: translateX(100%); /* Le texte commence hors écran à droite */
+    <!-- Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Vendor CSS Files -->
+    <link
+      href="static/assets/vendor/bootstrap/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="static/assets/vendor/bootstrap-icons/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <!-- Main CSS File -->
+    <link href="static/assets/css/main.css" rel="stylesheet" />
+  </head>
+  <style>
+    .header-container {
+      width: 100%; /* Assurez-vous que la largeur est fixée */
+      overflow: hidden; /* Cache tout ce qui dépasse la zone visible */
+      position: relative; /* Nécessaire pour le positionnement interne */
+      height: 50px; /* Fixez une hauteur pour la barre */
+      display: flex;
+      align-items: center; /* Centre verticalement le contenu */
+      background-color: #f8f9fa; /* Optionnel : couleur de fond */
+      border: 1px solid #ddd; /* Optionnel : bordure */
     }
-    100% {
-      transform: translateX(-100%); /* Le texte défile jusqu'à disparaître à gauche */
+
+    .marquee {
+      white-space: nowrap; /* Empêche le texte de revenir à la ligne */
+      display: inline-block; /* Nécessaire pour l'animation */
+      animation: marquee 10s linear infinite; /* Animation pour faire défiler */
     }
-  }
-</style>
 
+    @keyframes marquee {
+      0% {
+        transform: translateX(100%); /* Le texte commence hors écran à droite */
+      }
+      100% {
+        transform: translateX(
+          -100%
+        ); /* Le texte défile jusqu'à disparaître à gauche */
+      }
+    }
 
-<body class="index-page">
-  <header id="header" class="header d-flex align-items-center fixed-top">
-    <div class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-        <h1 class="marquee">Bienvenue sur Expense Manager — Gérez vos finances en toute simplicité</h1>
-    </div>
-  </header>
+    a {
+      text-decoration: none;
+    }
+  </style>
 
-  <main class="main">
-    <!-- Hero Section -->
-    <section id="hero" class="hero section">
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="row align-items-center">
+  <body class="index-page">
+    <div class="container-fluid px-4">
+      <!-- Navbar -->
+      <header class="d-flex justify-content-between align-items-center py-3">
+        <div class="d-flex align-items-center gap-2">
+          <img
+            src="/static/images/logo.png"
+            alt="Magnet Logo"
+            width="32"
+            height="32"
+            class="h-8 w-8"
+          />
+          <span class="fs-4 fw-semibold">Expense Manager</span>
+        </div>
+
+        <!-- <div class="d-none d-md-flex align-items-center gap-4">
+          <a href="/" class="fw-medium text-dark text-decoration-none">Home</a>
+          <a href="/services" class="fw-medium text-muted text-decoration-none"
+            >Services</a
+          >
+          <a
+            href="/mobile-app"
+            class="fw-medium text-muted text-decoration-none"
+            >Mobile App</a
+          >
+          <a href="/deposit" class="fw-medium text-muted text-decoration-none"
+            >Deposit & Credit</a
+          >
+          <a href="/support" class="fw-medium text-muted text-decoration-none"
+            >Support</a
+          >
+        </div> -->
+
+        <button
+          type="button"
+          class="btn btn-outline-dark d-none d-md-flex align-items-center gap-2"
+        >
+          <img src="/static/icons/github.svg" alt="" />
+          <!-- <span
+            class="bg-dark text-white rounded-circle d-flex justify-content-center align-items-center"
+            style="width: 24px; height: 24px"
+            >→</span
+          > -->
+        </button>
+      </header>
+
+      <!-- Info Banner -->
+
+      <!-- Main Content -->
+      <main class="container py-5">
+        <div class="row g-5 align-items-center">
+          <!-- Left Column -->
           <div class="col-lg-6">
-            <div class="hero-content" data-aos="fade-up" data-aos-delay="200">
-
-              <h1 class="mb-4">
-                Commencer par bien <br>
-                Gerer vos budget et <br>
-                <span class="accent-text">Economiser De L'argent</span>
-              </h1>
-
-              <p class="mb-4 mb-md-5">
-                Maîtrisez vos finances avec notre application simple et intuitive. Suivez vos dépenses et économisez chaque mois 
-              </p>
-
-              <div class="mt-4">
-                <a href="/register" class="btn btn-primary btn-lg">S'inscrire</a>
-                <a href="/login" class="btn btn-primary btn-lg">Se connecter</a>
+            <div
+              class="d-inline-flex align-items-center gap-2 bg-white border rounded-pill px-3 py-2"
+            >
+              <span class="small">N°1 des applications</span>
+              <div class="d-flex">
+                <div
+                  class="rounded-circle bg-light"
+                  style="width: 24px; height: 24px"
+                ></div>
+                <div
+                  class="rounded-circle bg-light ms-1"
+                  style="width: 24px; height: 24px"
+                ></div>
+              </div>
             </div>
+
+            <h1 class="display-4 fw-bold mt-4">
+              Gérez vos finances facilement avec Expense Manager
+            </h1>
+            <p class="fs-5 text-muted">
+              This banking app will help you control your spending, savings and
+              investments in one place.
+            </p>
+
+            <div class="d-flex flex-wrap gap-3 mt-4">
+              <button class="btn btn-dark text-white">
+                <a href="/login">Se connecter</a> →
+              </button>
+              <button class="btn btn-outline-dark">
+                <a href="/register">Inscription</a>
+              </button>
+            </div>
+
+            <div class="mt-5">
+              <div
+                class="d-flex align-items-center gap-3 bg-light rounded-3 p-3"
+              >
+                <div class="bg-light p-3 rounded-circle">
+                  <img
+                    src="/placeholder.svg"
+                    alt="App Icon"
+                    width="40"
+                    height="40"
+                  />
+                </div>
+                <div>
+                  <p class="fw-medium mb-0">Download Magnet App</p>
+                  <p class="small text-muted mb-0">
+                    Available for iOS and Android
+                  </p>
+                </div>
+                <span class="fs-3">→</span>
+              </div>
+
+              <div class="d-flex align-items-center gap-3 mt-3">
+                <div class="d-flex">
+                  <div
+                    class="rounded-circle bg-secondary"
+                    style="width: 32px; height: 32px"
+                  ></div>
+                  <div
+                    class="rounded-circle bg-secondary ms-1"
+                    style="width: 32px; height: 32px"
+                  ></div>
+                </div>
+                <div>
+                  <span class="fs-4 fw-semibold">22.5K</span>
+                  <span class="text-muted">satisfied users</span>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="col-lg-6">
-            <div class="hero-image" data-aos="zoom-out" data-aos-delay="300">
-              <img src="static/assets/img/1.png" alt="Hero Image" class="img-fluid">
+          <!-- Right Column -->
+          <div class="col-lg-6 position-relative">
+            <div class="ratio ratio-9x16 mx-auto" style="max-width: 400px">
+              <img
+                src="/placeholder.svg"
+                alt="App Interface"
+                class="img-fluid object-contain"
+              />
+            </div>
+            <div class="position-absolute top-50 end-0 translate-middle">
+              <img
+                src="/placeholder.svg"
+                alt="Debit Card"
+                width="200"
+                height="120"
+                class="rotate-12"
+              />
             </div>
           </div>
         </div>
-      </div>
-    </section><!-- /Hero Section -->
-  </main>
-  <!-- Vendor JS Files -->
-  <script src="static/assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <!-- Main JS File -->
-  <script src="static/assets/js/main.js"></script>
-
-</body>
-
+      </main>
+    </div>
+  </body>
 </html>
