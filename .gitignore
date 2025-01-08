@@ -1,0 +1,34 @@
+# Ignorer les fichiers de base de données SQLite
+*.sqlite3
+
+# Ignorer les fichiers compilés Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorer les fichiers de l'environnement virtuel (si applicable)
+venv/
+.env/
+env/
+
+# Ignorer les fichiers de configuration spécifiques à l'utilisateur
+.vscode/
+.idea/
+
+# Ignorer les fichiers de log
+*.log
+
+# Ignorer les fichiers temporaires
+*~
+
+# Ignorer les fichiers de migration Django
+*.py[cod]
+*$py.class
+
+# Ignorer les fichiers de cache Django
+*.mo
+
+# Ignorer les fichiers de cache de navigateur
+.DS_Store
+Thumbs.db
