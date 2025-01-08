@@ -29,7 +29,7 @@ Une application web de gestion des dépenses personnelles développée avec Djan
 
 1. Clonez le dépôt :
 ```bash
-git clone [URL_DU_DEPOT]
+git clone https://github.com/Steventog/Expense-manager.git
 cd Gestion_depenses
 ```
 
