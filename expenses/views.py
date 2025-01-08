@@ -2,15 +2,17 @@ from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import UserRegistrationForm, BudgetForm, DepenseForm
+from django.contrib.auth.forms import PasswordChangeForm
+from .forms import UserRegistrationForm, BudgetForm, DepenseForm, UserProfileForm
 from .models import Budget, Depense
 from django.utils import timezone
 from datetime import timedelta
 from django.db.models import Sum
-from django.shortcuts import render
+from django.db.models.functions import ExtractMonth, ExtractYear
+from django.contrib.auth import update_session_auth_hash
 
 def accueil(request):
-    return render(request, 'accueil.html')
+    return render(request, 'expenses/accueil.html')
 
 def register(request):
     if request.method == 'POST':
@@ -131,3 +133,82 @@ def history(request):
         'budget': budget
     }
     return render(request, 'expenses/history.html', context)
+
+@login_required
+def stats(request):
+    # Récupérer les dépenses de l'utilisateur
+    expenses = Depense.objects.filter(user=request.user)
+    budgets = Budget.objects.filter(user=request.user)
+
+    # Agréger les dépenses par mois
+    monthly_expenses = expenses.annotate(
+        month=ExtractMonth('date'),
+        year=ExtractYear('date')
+    ).values('year', 'month').annotate(
+        total=Sum('montant')
+    ).order_by('year', 'month')
+
+    # Préparer les données pour Chart.js
+    expense_labels = []
+    expense_data = []
+    budget_data = []
+
+    for entry in monthly_expenses:
+        month_name = f"{entry['year']}-{entry['month']:02d}"
+        expense_labels.append(month_name)
+        expense_data.append(float(entry['total']))
+        
+        # Récupérer le budget correspondant au mois
+        month_budget = budgets.filter(
+            date__year=entry['year'],
+            date__month=entry['month']
+        ).first()
+        budget_amount = float(month_budget.montant) if month_budget else 0
+        budget_data.append(budget_amount)
+
+    context = {
+        'expense_labels': expense_labels,
+        'expense_data': expense_data,
+        'budget_data': budget_data,
+    }
+    return render(request, 'expenses/stats.html', context)
+
+@login_required
+def profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Votre profil a été mis à jour avec succès!')
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=request.user)
+    
+    # Statistiques de l'utilisateur
+    expenses = Depense.objects.filter(user=request.user)
+    total_expenses = expenses.aggregate(total=Sum('montant'))['total'] or 0
+    expense_count = expenses.count()
+    
+    # Dernières dépenses
+    recent_expenses = expenses.order_by('-date')[:5]
+    
+    context = {
+        'form': form,
+        'total_expenses': total_expenses,
+        'expense_count': expense_count,
+        'recent_expenses': recent_expenses,
+    }
+    return render(request, 'expenses/profile.html', context)
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Votre mot de passe a été modifié avec succès!')
+            return redirect('profile')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'expenses/change_password.html', {'form': form})

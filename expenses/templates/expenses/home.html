@@ -45,9 +45,9 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>${{ total_expenses }}</td>
-                                <td class="text-success">${{ budget.montant }}</td>
-                                <td class="{% if remaining_budget < 0 %}text-danger{% else %}text-success{% endif %}">${{ remaining_budget }}</td>
+                                <td>{{ total_expenses }} FCFA</td>
+                                <td class="text-success">{{ budget.montant }} FCFA</td>
+                                <td class="{% if remaining_budget < 0 %}text-danger{% else %}text-success{% endif %}">{{ remaining_budget }} FCFA</td>
                             </tr>
                         </tbody>
                     </table>
@@ -98,7 +98,7 @@
                                         {% endif %}
                                     </td>
                                     <td>{{ expense.nom }}</td>
-                                    <td>{{ expense.montant }}€</td>
+                                    <td>{{ expense.montant }} FCFA</td>
                                     <td>{{ expense.date }}</td>
                                 </tr>
                                 {% endfor %}

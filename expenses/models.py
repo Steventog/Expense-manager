@@ -10,7 +10,7 @@ class Budget(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"Budget de {self.montant}€ pour {self.date}"
+        return f"Budget de {self.montant} FCFA pour {self.date}"
 
 class Depense(models.Model):
     nom = models.CharField(max_length=200)
@@ -20,7 +20,7 @@ class Depense(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.nom} - {self.montant}€"
+        return f"{self.nom} - {self.montant} FCFA"
 
     class Meta:
         verbose_name_plural = "Dépenses"

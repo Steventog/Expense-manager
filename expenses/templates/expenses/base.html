@@ -19,7 +19,7 @@
         /* Fixe la sidebar à gauche */
         .sidebar {
             position: fixed;
-            top: 56px; /* Hauteur de la navbar */
+            top: 75px; /* Hauteur de la navbar */
             left: 0;
             height: calc(100vh - 56px); /* Hauteur de la fenêtre - la hauteur de la navbar */
             overflow-y: auto; /* Ajoute un défilement si le contenu de la sidebar dépasse */
@@ -27,13 +27,13 @@
 
         /* Contenu principal avec espace pour navbar et sidebar */
         .main-content {
-            margin-top: 56px; /* Hauteur de la navbar */
-            margin-left: 25%; /* Largeur de la sidebar (ajustez si nécessaire) */
+            margin-top: 75px; /* Hauteur de la navbar */
+            margin-left: 15%; /* Largeur de la sidebar (ajustez si nécessaire) */
         }
 
         /* Assurez-vous que la sidebar a une largeur cohérente */
         .sidebar {
-            width: 25%; /* Largeur de la sidebar */
+            width: 15%; /* Largeur de la sidebar */
         }
     </style>
     <style>
@@ -72,48 +72,44 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top shadow-sm">
         <div class="container-fluid">
             <!-- Lien Home à gauche -->
-            <a class="navbar-brand" href="{% url 'home' %}">Home</a>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'icons/logo.svg' %}" alt="Expense Manager" height="40">
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
     
             <!-- Liens à droite -->
             {% if user.is_authenticated %}
-                <div class="collapse navbar-collapse justify-content-end ml-3" id="navbarSupportedContent">
-                    <!-- Filtres d'années et de mois -->
-                    {% comment %}
-                    <form method="get" action="" class="d-flex">
-                        <select name="year" class="form-select mx-2" onchange="this.form.submit()">
-                            <option value="">Toutes les années</option>
-                            {% for date in years_months|dictsortreversed:"year" %}
-                                <option value="{{ date|date:'Y' }}" {% if selected_year == date|date:'Y' %}selected{% endif %}>
-                                    {{ date|date:'Y' }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <select name="month" class="form-select mx-2" onchange="this.form.submit()">
-                            <option value="">Tous les mois</option>
-                            {% for date in years_months %}
-                                <option value="{{ date|date:'m' }}" {% if selected_month == date|date:'m' %}selected{% endif %}>
-                                    {{ date|date:'F' }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </form>
-        
-                    <!-- Recherche -->
-                    <form class="d-flex mx-2 my-2 my-lg-0" method="GET" action="" id="searchForm">
-                        <input class="form-control me-2" type="search" name="search" placeholder="Nom ou prix" aria-label="Search" value="{{ request.GET.search }}">
-                        <button class="btn btn-outline-success" type="submit">Rechercher</button>
-                    </form>
-                    {% endcomment %}
-        
+                <div class="collapse navbar-collapse justify-content-end me-5" id="navbarSupportedContent">
                     <!-- Utilisateur -->
-                    <div class="navbar-nav nav-item ">
-                        <a class="nav-link " href="#" >
-                            {{ user.username }}
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                    <span class="text-white" style="font-size: 14px;">{{ user.username|make_list|first|upper }}</span>
+                                </div>
+                                <span class="text-dark">{{ user.username }}</span>
+                            </div>
                         </a>
-                    
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userDropdown">
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center" href="{% url 'profile' %}">
+                                    <i class="bi bi-person-fill me-2"></i>
+                                    Mon Profil
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" class="mt-3">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item d-flex align-items-center text-danger" href="{% url 'logout' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i>
+                                        Déconnexion
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             {% endif %}
@@ -138,8 +134,8 @@
                     <img src="{% static 'icons/cash.svg' %}" alt="Ajouter une dépense" class="me-2" style="width: 20px; height: 20px;">
                     <span>Ajouter une dépense</span>
                 </a>
-                <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'history' %}">
-                    <img src="{% static 'icons/stats.svg' %}" alt="Historique" class="me-2" style="width: 20px; height: 20px;">
+                <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'stats' %}">
+                    <img src="{% static 'icons/statistics.svg' %}" alt="Statistique" class="me-2" style="width: 20px; height: 20px;">
                     <span>Statistiques</span>
                 </a>
 
@@ -148,13 +144,6 @@
                     <span>Historique</span>
                 </a>
                 
-                <form method="post" action="{% url 'logout' %}" class="mt-3">
-                    {% csrf_token %}
-                    <button type="submit" class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow">
-                        <img src="{% static 'icons/logout.svg' %}" alt="Historique" class="me-2" style="width: 20px; height: 20px;">
-                        Déconnexion
-                    </button>
-                </form>
             {% else %}
                 <a class="nav-link mb-2 p-3 rounded-3 hover-shadow" href="{% url 'register' %}">
                     Inscription

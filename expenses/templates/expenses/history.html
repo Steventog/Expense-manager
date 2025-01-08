@@ -47,11 +47,11 @@
                     <!-- Résumé -->
                     <div class="alert {% if budget and total > budget.montant %}alert-danger{% else %}alert-info{% endif %} mb-4">
                         <h4>Résumé de la période</h4>
-                        <p>Total des dépenses : {{ total }}€</p>
+                        <p>Total des dépenses : {{ total }} FCFA</p>
                         {% if budget %}
-                            <p>Budget : {{ budget.montant }}€</p>
+                            <p>Budget : {{ budget.montant }} FCFA</p>
                             {% with difference=budget.montant|add:"-"|add:total %}
-                                <p>Différence : {{ difference }}€</p>
+                                <p>Différence : {{ difference }} FCFA</p>
                             {% endwith %}
                         {% endif %}
                     </div>
@@ -79,14 +79,14 @@
                                             </td>
                                             <td>{{ expense.date|date:"d/m/Y" }}</td>
                                             <td>{{ expense.nom }}</td>
-                                            <td>{{ expense.montant }}€</td>
+                                            <td>{{ expense.montant }} FCFA</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                                 <tfoot>
                                     <tr class="table-info">
                                         <td colspan="3"><strong>Total</strong></td>
-                                        <td colspan="3"><strong>{{ total }}€</strong></td>
+                                        <td colspan="3"><strong>{{ total }} FCFA</strong></td>
                                     </tr>
                                 </tfoot>
                             </table>
