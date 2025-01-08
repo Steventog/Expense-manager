@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Tirelire stylisée -->
+    <circle cx="200" cy="150" r="120" fill="#4CAF50" opacity="0.1"/>
+    <path d="M260 150C260 183.137 233.137 210 200 210C166.863 210 140 183.137 140 150C140 116.863 166.863 90 200 90" 
+          stroke="#4CAF50" stroke-width="12" stroke-linecap="round"/>
+    
+    <!-- Pièces de monnaie -->
+    <circle cx="160" cy="200" r="25" fill="#66BB6A"/>
+    <circle cx="220" cy="180" r="20" fill="#81C784"/>
+    <circle cx="180" cy="160" r="15" fill="#A5D6A7"/>
+    
+    <!-- Symbole FCFA stylisé -->
+    <path d="M200 120H240" stroke="#2E7D32" stroke-width="8" stroke-linecap="round"/>
+    <path d="M210 100V140" stroke="#2E7D32" stroke-width="8" stroke-linecap="round"/>
+    
+    <!-- Éléments décoratifs -->
+    <circle cx="150" cy="100" r="8" fill="#2E7D32"/>
+    <circle cx="250" cy="200" r="6" fill="#2E7D32"/>
+    <circle cx="180" cy="220" r="4" fill="#2E7D32"/>
+</svg>

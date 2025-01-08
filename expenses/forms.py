@@ -4,17 +4,20 @@ from django.contrib.auth.models import User
 from .models import Budget, Depense
 
 class UserRegistrationForm(UserCreationForm):
-    email = forms.EmailField()
-
+    email = forms.EmailField(required=True)
+    
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2']
-    
+        
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Désactiver les messages d'aide pour tous les champs
-        for field_name, field in self.fields.items():
-            field.help_text = None
+        # Ajouter les classes Bootstrap à tous les champs
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs.update({
+                'class': 'form-control',
+                'placeholder': self.fields[field_name].label
+            })
             
 class BudgetForm(forms.ModelForm):
     class Meta:
