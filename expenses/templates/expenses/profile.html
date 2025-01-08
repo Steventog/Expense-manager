@@ -8,12 +8,12 @@
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
                 <div class="card-body text-center">
-                    <div class="rounded-circle bg-primary mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
+                    <div class="rounded-circle bg-success mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 100px; height: 100px;">
                         <span class="text-white" style="font-size: 40px;">{{ user.username|make_list|first|upper }}</span>
                     </div>
                     <h4 class="card-title">{{ user.get_full_name|default:user.username }}</h4>
                     <p class="text-muted">{{ user.email }}</p>
-                    <a href="{% url 'change_password' %}" class="btn btn-outline-primary mt-2">
+                    <a href="{% url 'change_password' %}" class="btn btn-outline-success mt-2">
                         <i class="bi bi-key me-2"></i>Changer le mot de passe
                     </a>
                 </div>
@@ -38,7 +38,7 @@
                             {% endif %}
                         </div>
                         {% endfor %}
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-success">
                             <i class="bi bi-save me-2"></i>Enregistrer les modifications
                         </button>
                     </form>
@@ -53,7 +53,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Total des dépenses</h5>
-                    <h3 class="text-primary">{{ total_expenses}} FCFA</h3>
+                    <h3 class="text-success">{{ total_expenses}} FCFA</h3>
                 </div>
             </div>
         </div>
@@ -61,7 +61,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">Nombre de dépenses</h5>
-                    <h3 class="text-primary">{{ expense_count }}</h3>
+                    <h3 class="text-success">{{ expense_count }}</h3>
                 </div>
             </div>
         </div>

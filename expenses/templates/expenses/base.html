@@ -86,7 +86,7 @@
                     <div class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="d-flex align-items-center">
-                                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
                                     <span class="text-white" style="font-size: 14px;">{{ user.username|make_list|first|upper }}</span>
                                 </div>
                                 <span class="text-dark">{{ user.username }}</span>
@@ -123,25 +123,25 @@
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'home' %}">
                 <img src="{% static 'icons/home.svg' %}" alt="Dashboard" class="me-2" style="width: 20px; height: 20px;">
-                <span>Dashboard</span>
+                <span style="color: #198754;">Dashboard</span>
             </a>
             <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'add_budget' %}">
                 <img src="{% static 'icons/plus-circle.svg' %}" alt="Ajouter un budget" class="me-2" style="width: 20px; height: 20px;">
-                <span>Ajouter un budget</span>
+                <span style="color: #198754;">Ajouter un budget</span>
             </a>
             
             <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'add_expense' %}">
                 <img src="{% static 'icons/cash.svg' %}" alt="Ajouter une dépense" class="me-2" style="width: 20px; height: 20px;">
-                <span>Ajouter une dépense</span>
+                <span style="color: #198754;">Ajouter une dépense</span>
             </a>
             <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'stats' %}">
                 <img src="{% static 'icons/statistics.svg' %}" alt="Statistique" class="me-2" style="width: 20px; height: 20px;">
-                <span>Statistiques</span>
+                <span style="color: #198754;">Statistiques</span>
             </a>
 
             <a class="nav-link mb-2 d-flex align-items-center p-3 rounded-3 hover-shadow" href="{% url 'history' %}">
                 <img src="{% static 'icons/history.svg' %}" alt="Historique" class="me-2" style="width: 20px; height: 20px;">
-                <span>Historique</span>
+                <span style="color: #198754;">Historique</span>
             </a>
                 
         {% comment %} {% else %}

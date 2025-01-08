@@ -24,7 +24,14 @@ class BudgetForm(forms.ModelForm):
         model = Budget
         fields = ['montant', 'date']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'})
+            'montant': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Montant du budget'
+            }),
+            'date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            })
         }
 
 class DepenseForm(forms.ModelForm):
@@ -32,7 +39,22 @@ class DepenseForm(forms.ModelForm):
         model = Depense
         fields = ['nom', 'montant', 'date', 'image']
         widgets = {
-            'date': forms.DateInput(attrs={'type': 'date'})
+            'nom': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Description de la dépense'
+            }),
+            'montant': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Montant'
+            }),
+            'date': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'image': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            })
         }
 
 class UserProfileForm(forms.ModelForm):
