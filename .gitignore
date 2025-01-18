@@ -1,6 +1,9 @@
 # Ignorer les fichiers de base de données SQLite
 *.sqlite3
 
+# Ignorer les fichiers documentations
+DOCUMENTATION*.txt
+
 # Ignorer les fichiers compilés Python
 __pycache__/
 *.pyc

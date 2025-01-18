@@ -6,7 +6,7 @@
     
     <!-- Section Cards -->
     <div class="row">
-        <div class="col-md-4 mb-4">
+        <div class="col-md-3 mb-4">
             <div class="card text-center shadow-sm">
                 <a href="{% url 'add_expense' %}" class="text-decoration-none">
                     <div class="card-body">
@@ -16,7 +16,7 @@
                 </a>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
+        <div class="col-md-3 mb-4">
             <div class="card text-center shadow-sm">
                 <a href="{% url 'add_budget' %}" class="text-decoration-none">
                     <div class="card-body">
@@ -26,18 +26,28 @@
                 </a>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
+        <div class="col-md-3 mb-4">
             <div class="card text-center shadow-sm">
                 <a href="{% url 'history' %}" class="text-decoration-none">
                     <div class="card-body">
                         <img src="{% static 'icons/history-icon.svg' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
-                        <h5 class="card-title" style="color: #198754;">Historique Dépenses</h5>
+                        <h5 class="card-title" style="color: #198754;">Liste des Dépenses</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card text-center shadow-sm">
+                <a href="{% url 'budget_list' %}" class="text-decoration-none">
+                    <div class="card-body">
+                        <img src="{% static 'icons/history-icon.svg' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
+                        <h5 class="card-title" style="color: #198754;">Liste des Budget</h5>
                     </div>
                 </a>
             </div>
         </div>
     </div>
-
+    
     <!-- Section Résumé des Budgets -->
     <div class="row">
         <div class="col-md-12">
