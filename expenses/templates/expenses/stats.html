@@ -1,14 +1,18 @@
 {% extends 'expenses/base.html' %}
+{% load static %}
+{% load expense_extras %}
 
 {% block content %}
 <div class="container mt-4">
     <h2 class="mb-4">Statistiques des Dépenses</h2>
 
-    <!-- Graphique des dépenses mensuelles vs budget -->
+    <!-- Graphique des 6 derniers mois -->
     <div class="card shadow-sm mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">Évolution</h5>
+        </div>
         <div class="card-body">
-            <h5 class="card-title">Dépenses vs Budget par Mois</h5>
-            <canvas id="monthlyChart"></canvas>
+            <canvas id="monthlyChart" height="300"></canvas>
         </div>
     </div>
 </div>
@@ -22,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const labels = {{ expense_labels|safe }};
     const expenseData = {{ expense_data|safe }};
     const budgetData = {{ budget_data|safe }};
+    const remainingData = {{ remaining_data|safe }};
 
     // Configuration du graphique
     const ctx = document.getElementById('monthlyChart').getContext('2d');
@@ -34,14 +39,24 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: expenseData,
                 backgroundColor: 'rgba(255, 99, 132, 0.5)',
                 borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
+                borderWidth: 1,
+                order: 2
             }, {
                 label: 'Budget',
                 data: budgetData,
                 type: 'line',
                 fill: false,
                 borderColor: 'rgba(54, 162, 235, 1)',
-                tension: 0.1
+                tension: 0.1,
+                order: 0
+            }, {
+                label: 'Montant Restant',
+                data: remainingData,
+                backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+                type: 'bar',
+                order: 1
             }]
         },
         options: {
@@ -49,26 +64,24 @@ document.addEventListener('DOMContentLoaded', function() {
             scales: {
                 y: {
                     beginAtZero: true,
+                    stacked: false,
                     title: {
                         display: true,
-                        text: 'Montant (FCFA)'
+                        text: 'FCFA'
                     }
                 },
                 x: {
-                    title: {
-                        display: true,
-                        text: 'Mois'
-                    }
+                    stacked: false
                 }
             },
             plugins: {
                 title: {
                     display: true,
-                    text: 'Comparaison Dépenses vs Budget'
+                    text: 'Évolution du Budget et des Dépenses'
                 },
                 tooltip: {
                     mode: 'index',
-                    intersect: false,
+                    intersect: false
                 }
             }
         }

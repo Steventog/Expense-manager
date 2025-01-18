@@ -1,0 +1,28 @@
+{% extends 'expenses/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Journal d'activités</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="list-group">
+                {% for action in actions %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ action.get_action_display }}</h5>
+                        <small class="text-muted">{{ action.date|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <p class="mb-1">{{ action.description }}</p>
+                </div>
+                {% empty %}
+                <div class="list-group-item">
+                    <p class="mb-0">Aucune activité enregistrée.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

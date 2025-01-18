@@ -1,15 +1,15 @@
 from django.db.models import Q
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 from django.contrib import messages
-from django.contrib.auth.forms import PasswordChangeForm
-from .forms import UserRegistrationForm, BudgetForm, DepenseForm, UserProfileForm
-from .models import Budget, Depense
-from django.utils import timezone
-from datetime import timedelta
+from .forms import UserRegistrationForm, BudgetForm, DepenseForm, UserProfileForm, BudgetAdjustForm
+from .models import Budget, Depense, Notification, ActionLog
 from django.db.models import Sum
-from django.db.models.functions import ExtractMonth, ExtractYear
-from django.contrib.auth import update_session_auth_hash
+from django.utils import timezone
+from datetime import datetime, timedelta
+from django.http import JsonResponse
+from decimal import Decimal
 
 def accueil(request):
     return render(request, 'expenses/accueil.html')
@@ -18,71 +18,233 @@ def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Compte créé pour {username}!')
-            return redirect('login')
+            user = form.save()
+            login(request, user)
+            return redirect('home')
     else:
         form = UserRegistrationForm()
     return render(request, 'expenses/register.html', {'form': form})
 
 @login_required
 def home(request):
-    current_date = timezone.now().date()
-    current_month_start = current_date.replace(day=1)
-    next_month = current_date.replace(day=28) + timedelta(days=4)
-    current_month_end = next_month - timedelta(days=next_month.day)
+    # Récupérer tous les budgets
+    budgets = Budget.objects.filter(
+        user=request.user
+    ).order_by('-date_debut')
 
-    # Get current month's budget
-    current_budget = Budget.objects.filter(
-        user=request.user,
-        date__year=current_date.year,
-        date__month=current_date.month
-    ).first()
-
-    # Get current month's expenses
+    # Récupérer les dépenses récentes (limité à 5)
     expenses = Depense.objects.filter(
-        user=request.user,
-        date__range=[current_month_start, current_month_end]
-    ).order_by('-date')
-
-    total_expenses = expenses.aggregate(Sum('montant'))['montant__sum'] or 0
+        user=request.user
+    ).select_related('budget').order_by('-date')[:5]
 
     context = {
-        'budget': current_budget,
+        'budgets': budgets,
         'expenses': expenses,
-        'total_expenses': total_expenses,
-        'remaining_budget': (current_budget.montant - total_expenses) if current_budget else 0
     }
+    
     return render(request, 'expenses/home.html', context)
 
 @login_required
 def add_budget(request):
     if request.method == 'POST':
-        form = BudgetForm(request.POST)
+        form = BudgetForm(request.POST, request.FILES)
         if form.is_valid():
             budget = form.save(commit=False)
             budget.user = request.user
+            budget.date_fin = form.cleaned_data.get('date_fin')
             budget.save()
-            messages.success(request, 'Budget ajouté avec succès!')
+            
+            ActionLog.objects.create(
+                user=request.user,
+                action='create_budget',
+                description=f"Création du budget '{budget.nom}' de {budget.montant} FCFA"
+            )
+            
+            messages.success(request, 'Budget créé avec succès!')
             return redirect('home')
     else:
         form = BudgetForm()
-    return render(request, 'expenses/budget_form.html', {'form': form})
+    return render(request, 'expenses/add_budget.html', {'form': form})
+
+@login_required
+def edit_budget(request, budget_id):
+    budget = get_object_or_404(Budget, id=budget_id, user=request.user)
+    
+    if request.method == 'POST':
+        form = BudgetAdjustForm(request.POST)
+        if form.is_valid():
+            montant_ajout = form.cleaned_data['montant_ajout']
+            
+            # Mettre à jour les montants
+            budget.montant += montant_ajout
+            budget.montant_restant += montant_ajout
+            budget.save()
+            
+            # Créer une entrée dans le journal
+            ActionLog.objects.create(
+                user=request.user,
+                action='edit_budget',
+                description=f"Ajout de {montant_ajout} FCFA au budget '{budget.nom}'"
+            )
+            
+            messages.success(request, f'Budget ajusté avec succès! Ajout de {montant_ajout} FCFA')
+            return redirect('home')
+    else:
+        form = BudgetAdjustForm()
+    
+    return render(request, 'expenses/adjust_budget.html', {
+        'form': form,
+        'budget': budget
+    })
+
+@login_required
+def delete_budget(request, budget_id):
+    budget = get_object_or_404(Budget, id=budget_id, user=request.user)
+    if request.method == 'POST':
+        nom_budget = budget.nom
+        budget.delete()
+        
+        ActionLog.objects.create(
+            user=request.user,
+            action='delete_budget',
+            description=f"Suppression du budget '{nom_budget}'"
+        )
+        
+        messages.success(request, 'Budget supprimé avec succès!')
+        return redirect('home')
+    return render(request, 'expenses/delete_budget.html', {'budget': budget})
 
 @login_required
 def add_expense(request):
     if request.method == 'POST':
-        form = DepenseForm(request.POST, request.FILES)
+        form = DepenseForm(request.user, request.POST, request.FILES)
         if form.is_valid():
-            expense = form.save(commit=False)
-            expense.user = request.user
-            expense.save()
+            depense = form.save(commit=False)
+            depense.user = request.user
+            
+            # Vérifier si un budget est sélectionné
+            budget = form.cleaned_data.get('budget')
+            if budget:
+                # Vérifier si le montant de la dépense ne dépasse pas le budget restant
+                if depense.montant > budget.montant_restant:
+                    messages.error(request, f'Le budget "{budget.nom}" est insuffisant! (Reste: {budget.montant_restant} FCFA)')
+                    
+                    # Créer une notification
+                    Notification.objects.create(
+                        user=request.user,
+                        message=f'Attention: Tentative de dépense de {depense.montant} FCFA alors que le budget "{budget.nom}" ne dispose que de {budget.montant_restant} FCFA',
+                        lu=False
+                    )
+                    
+                    return render(request, 'expenses/add_expense.html', {'form': form})
+                
+                # Mettre à jour le montant restant du budget
+                budget.montant_restant -= depense.montant
+                budget.save()
+            
+            depense.save()
+            
+            # Créer une entrée dans le journal d'activité
+            ActionLog.objects.create(
+                user=request.user,
+                action='add_expense',
+                description=f"Ajout d'une dépense de {depense.montant} FCFA pour '{depense.nom}'"
+            )
+            
             messages.success(request, 'Dépense ajoutée avec succès!')
             return redirect('home')
     else:
-        form = DepenseForm()
-    return render(request, 'expenses/expense_form.html', {'form': form})
+        form = DepenseForm(request.user)
+        
+        # Vérifier si l'utilisateur a des budgets
+        if not Budget.objects.filter(user=request.user).exists():
+            messages.warning(request, 'Vous devez créer un budget avant d\'ajouter une dépense.')
+            return redirect('add_budget')
+            
+    return render(request, 'expenses/add_expense.html', {'form': form})
+
+@login_required
+def journal(request):
+    actions = ActionLog.objects.filter(user=request.user).order_by('-date')
+    return render(request, 'expenses/journal.html', {'actions': actions})
+
+@login_required
+def notifications(request):
+    notifications = Notification.objects.filter(user=request.user).order_by('-date')
+    return render(request, 'expenses/notifications.html', {'notifications': notifications})
+
+@login_required
+def mark_notification_read(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.lu = True
+    notification.save()
+    return JsonResponse({'status': 'success'})
+
+@login_required
+def delete_notification(request, notification_id):
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.delete()
+    return JsonResponse({'status': 'success'})
+
+@login_required
+def delete_all_notifications(request):
+    Notification.objects.filter(user=request.user).delete()
+    return JsonResponse({'status': 'success'})
+
+@login_required
+def stats(request):
+    # Récupérer toutes les dépenses et les budgets
+    all_expenses = Depense.objects.filter(
+        user=request.user
+    ).order_by('date')
+
+    all_budgets = Budget.objects.filter(
+        user=request.user
+    ).order_by('date_debut')
+
+    # Créer une liste de toutes les dates uniques pour l'axe X
+    all_dates = set()
+    for expense in all_expenses:
+        all_dates.add(expense.date)
+    for budget in all_budgets:
+        all_dates.add(budget.date_debut)
+        if budget.date_fin:
+            all_dates.add(budget.date_fin)
+    
+    # Trier les dates
+    all_dates = sorted(list(all_dates))
+
+    # Préparer les données pour le graphique
+    expense_data = []
+    budget_data = []
+    expense_labels = []
+
+    # Pour chaque date, calculer le total des dépenses et des budgets actifs
+    for date in all_dates:
+        # Total des dépenses pour cette date
+        daily_expenses = sum(expense.montant for expense in all_expenses.filter(date=date))
+
+        # Total des budgets actifs pour cette date
+        active_budgets_sum = sum(
+            budget.montant for budget in all_budgets.filter(
+                date_debut__lte=date
+            ).filter(Q(date_fin__gte=date) | Q(date_fin__isnull=True))
+        )
+
+        expense_data.append(float(daily_expenses))
+        budget_data.append(float(active_budgets_sum))
+        expense_labels.append(date.strftime('%Y-%m-%d'))
+
+    # Calculer le montant restant pour chaque date
+    remaining_data = [max(0, b - e) for b, e in zip(budget_data, expense_data)]
+
+    context = {
+        'expense_labels': expense_labels,
+        'expense_data': expense_data,
+        'budget_data': budget_data,
+        'remaining_data': remaining_data,
+    }
+    return render(request, 'expenses/stats.html', context)
 
 @login_required
 def history(request):
@@ -135,43 +297,41 @@ def history(request):
     return render(request, 'expenses/history.html', context)
 
 @login_required
-def stats(request):
-    # Récupérer les dépenses de l'utilisateur
-    expenses = Depense.objects.filter(user=request.user)
-    budgets = Budget.objects.filter(user=request.user)
-
-    # Agréger les dépenses par mois
-    monthly_expenses = expenses.annotate(
-        month=ExtractMonth('date'),
-        year=ExtractYear('date')
-    ).values('year', 'month').annotate(
-        total=Sum('montant')
-    ).order_by('year', 'month')
-
-    # Préparer les données pour Chart.js
-    expense_labels = []
-    expense_data = []
-    budget_data = []
-
-    for entry in monthly_expenses:
-        month_name = f"{entry['year']}-{entry['month']:02d}"
-        expense_labels.append(month_name)
-        expense_data.append(float(entry['total']))
+def budget_list(request):
+    # Récupérer tous les budgets de l'utilisateur
+    budgets = Budget.objects.filter(user=request.user).order_by('-date_debut')
+    
+    # Pour chaque budget, récupérer ses dépenses
+    budget_details = []
+    for budget in budgets:
+        expenses = Depense.objects.filter(
+            user=request.user,
+            budget=budget
+        ).order_by('-date')
         
-        # Récupérer le budget correspondant au mois
-        month_budget = budgets.filter(
-            date__year=entry['year'],
-            date__month=entry['month']
-        ).first()
-        budget_amount = float(month_budget.montant) if month_budget else 0
-        budget_data.append(budget_amount)
-
+        total_expenses = expenses.aggregate(total=Sum('montant'))['total'] or 0
+        
+        budget_details.append({
+            'budget': budget,
+            'expenses': expenses,
+            'total_expenses': total_expenses,
+        })
+    
+    # Dépenses sans budget
+    unbudgeted_expenses = Depense.objects.filter(
+        user=request.user,
+        budget__isnull=True
+    ).order_by('-date')
+    
+    total_unbudgeted = unbudgeted_expenses.aggregate(total=Sum('montant'))['total'] or 0
+    
     context = {
-        'expense_labels': expense_labels,
-        'expense_data': expense_data,
-        'budget_data': budget_data,
+        'budget_details': budget_details,
+        'unbudgeted_expenses': unbudgeted_expenses,
+        'total_unbudgeted': total_unbudgeted,
     }
-    return render(request, 'expenses/stats.html', context)
+    
+    return render(request, 'expenses/budget_list.html', context)
 
 @login_required
 def profile(request):

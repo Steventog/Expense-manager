@@ -65,6 +65,7 @@
                                         <th>Image</th>
                                         <th>Date</th>
                                         <th>Nom</th>
+                                        <th>Budget</th>
                                         <th>Montant</th>
                                     </tr>
                                 </thead>
@@ -79,14 +80,21 @@
                                             </td>
                                             <td>{{ expense.date|date:"d/m/Y" }}</td>
                                             <td>{{ expense.nom }}</td>
+                                            <td>
+                                                {% if expense.budget %}
+                                                    <span class="badge bg-success">{{ expense.budget.nom }}</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">Sans budget</span>
+                                                {% endif %}
+                                            </td>
                                             <td>{{ expense.montant }} FCFA</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                                 <tfoot>
                                     <tr class="table-info">
-                                        <td colspan="3"><strong>Total</strong></td>
-                                        <td colspan="3"><strong>{{ total }} FCFA</strong></td>
+                                        <td colspan="4"><strong>Total</strong></td>
+                                        <td colspan="1"><strong>{{ total }} FCFA</strong></td>
                                     </tr>
                                 </tfoot>
                             </table>

@@ -1,0 +1,104 @@
+{% extends 'expenses/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Modifier le budget</h2>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="mb-3">
+                    {{ form.nom.label_tag }}
+                    {{ form.nom }}
+                    {% if form.nom.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.nom.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.montant.label_tag }}
+                    {{ form.montant }}
+                    {% if form.montant.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.montant.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.image.label_tag }}
+                    {{ form.image }}
+                    {% if form.image.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.image.errors }}
+                    </div>
+                    {% endif %}
+                    {% if budget.image %}
+                    <div class="mt-2">
+                        <img src="{{ budget.image.url }}" alt="Image actuelle" class="img-thumbnail" style="max-width: 200px;">
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.validite.label_tag }}
+                    {{ form.validite }}
+                    {% if form.validite.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.validite.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.date_debut.label_tag }}
+                    {{ form.date_debut }}
+                    {% if form.date_debut.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.date_debut.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3" id="date-fin-group" style="display: none;">
+                    {{ form.date_fin.label_tag }}
+                    {{ form.date_fin }}
+                    {% if form.date_fin.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.date_fin.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const validiteSelect = document.getElementById('validite-select');
+    const dateFinGroup = document.getElementById('date-fin-group');
+    
+    function toggleDateFin() {
+        if (validiteSelect.value === 'custom') {
+            dateFinGroup.style.display = 'block';
+        } else {
+            dateFinGroup.style.display = 'none';
+        }
+    }
+    
+    validiteSelect.addEventListener('change', toggleDateFin);
+    toggleDateFin(); // Initial state
+});
+</script>
+{% endblock %}
+{% endblock %}

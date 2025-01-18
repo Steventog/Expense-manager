@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="50" viewBox="0 0 280 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background Circle -->
+    <circle cx="25" cy="25" r="23" fill="#4CAF50" opacity="0.9"/>
+    
+    <!-- Euro Symbol -->
+    <path d="M32 25C32 29.4183 28.4183 33 24 33C19.5817 33 16 29.4183 16 25C16 20.5817 19.5817 17 24 17" 
+          stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <path d="M16 23H26" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <path d="M16 27H24" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    
+    <!-- Text "Expense" -->
+    <text x="55" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#2E7D32">
+        Expense
+    </text>
+    
+    <!-- Text "Manager" -->
+    <text x="165" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#66BB6A">
+        Manager
+    </text>
+</svg>

@@ -1,0 +1,141 @@
+{% extends 'expenses/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Notifications</h2>
+        {% if notifications %}
+        <button class="btn btn-danger" id="deleteAllBtn">
+            <img src="{% static 'icons/delete.svg' %}" alt="Supprimer" class="me-2" style="width: 20px; height: 20px; filter: brightness(0) invert(1);">
+            Tout supprimer
+        </button>
+        {% endif %}
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <div class="list-group">
+                {% for notification in notifications %}
+                <div class="list-group-item {% if not notification.lu %}list-group-item-warning{% endif %}" id="notification-{{ notification.id }}">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-1">{{ notification.message }}</h5>
+                            <small class="text-muted">{{ notification.date|date:"d/m/Y H:i" }}</small>
+                        </div>
+                        <div class="btn-group">
+                            {% if not notification.lu %}
+                            <button class="btn btn-sm btn-outline-secondary mark-read-btn" data-notification-id="{{ notification.id }}">
+                                <i class="bi bi-check2"></i> Lu
+                            </button>
+                            {% endif %}
+                            <button class="btn btn-sm btn-outline-danger delete-btn" data-notification-id="{{ notification.id }}">
+                                <img src="{% static 'icons/delete.svg' %}" alt="Supprimer" style="width: 16px; height: 16px;">
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="list-group-item">
+                    <p class="mb-0">Aucune notification.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const markReadButtons = document.querySelectorAll('.mark-read-btn');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
+    
+    // Marquer comme lu
+    markReadButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationId = this.dataset.notificationId;
+            fetch(`/notifications/mark-read/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const notification = document.getElementById(`notification-${notificationId}`);
+                    notification.classList.remove('list-group-item-warning');
+                    this.remove();
+                }
+            });
+        });
+    });
+
+    // Supprimer une notification
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            if (!confirm('Voulez-vous vraiment supprimer cette notification ?')) return;
+            
+            const notificationId = this.dataset.notificationId;
+            fetch(`/notifications/delete/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const notification = document.getElementById(`notification-${notificationId}`);
+                    notification.remove();
+                    
+                    // Si plus de notifications, recharger la page
+                    if (document.querySelectorAll('.list-group-item').length <= 1) {
+                        location.reload();
+                    }
+                }
+            });
+        });
+    });
+
+    // Supprimer toutes les notifications
+    if (deleteAllBtn) {
+        deleteAllBtn.addEventListener('click', function() {
+            if (!confirm('Voulez-vous vraiment supprimer toutes les notifications ?')) return;
+            
+            fetch('/notifications/delete-all/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    location.reload();
+                }
+            });
+        });
+    }
+    
+    // Fonction pour obtenir le cookie CSRF
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

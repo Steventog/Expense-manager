@@ -1,68 +1,110 @@
 {% extends "expenses/base.html" %}
-{% load crispy_forms_tags static %}
+{% load crispy_forms_tags static expense_extras %}
 {% block content %}
 <div class="container mt-5">
     <h2 class="mb-4">Dashboard</h2>
     
     <!-- Section Cards -->
     <div class="row">
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="card text-center shadow-sm">
                 <a href="{% url 'add_expense' %}" class="text-decoration-none">
                     <div class="card-body">
-                        <img src="{% static 'images/dollars.png' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px; color: #198754;">
+                        <img src="{% static 'icons/new-expense.svg' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
                         <h5 class="card-title" style="color: #198754;">Nouvelle Dépense</h5>
                     </div>
                 </a>
             </div>
         </div>
-        <div class="col-md-6 mb-4">
+        <div class="col-md-4 mb-4">
             <div class="card text-center shadow-sm">
                 <a href="{% url 'add_budget' %}" class="text-decoration-none">
                     <div class="card-body">
-                        <img src="{% static 'images/dollars.png' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
-                        <h5 class="card-title" style="color: #198754;">Budget</h5>
+                        <img src="{% static 'icons/budget-icon.svg' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
+                        <h5 class="card-title" style="color: #198754;">Nouveau Budget</h5>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card text-center shadow-sm">
+                <a href="{% url 'history' %}" class="text-decoration-none">
+                    <div class="card-body">
+                        <img src="{% static 'icons/history-icon.svg' %}" alt="Dollar" class="me-2 mb-3" style="width: 50px; height: 50px;">
+                        <h5 class="card-title" style="color: #198754;">Historique Dépenses</h5>
                     </div>
                 </a>
             </div>
         </div>
     </div>
 
-    <!-- Section Résumé du Mois -->
+    <!-- Section Résumé des Budgets -->
     <div class="row">
         <div class="col-md-12">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h2 class="card-title mb-4">Résumé du mois</h2>
-                    {% if budget %}
-                    <table class="table table-bordered text-center">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Total Dépenses</th>
-                                <th>Budget</th>
-                                <th>Reste</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{{ total_expenses }} FCFA</td>
-                                <td class="text-success">{{ budget.montant }} FCFA</td>
-                                <td class="{% if remaining_budget < 0 %}text-danger{% else %}text-success{% endif %}">{{ remaining_budget }} FCFA</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <div class="progress" style="height: 12px;">
-                        <div 
-                            class="progress-bar {% if remaining_budget < 0 %}bg-danger{% else %}bg-success{% endif %}" 
-                            role="progressbar" 
-                            style="width: {% widthratio total_expenses budget.montant 100 %}%;"
-                            aria-valuenow="{{ total_expenses }}" 
-                            aria-valuemin="0" 
-                            aria-valuemax="{{ budget.montant }}">
-                        </div>
+                    <h2 class="card-title mb-4">Budgets du mois</h2>
+                    {% if budgets %}
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nom</th>
+                                    <th>Période</th>
+                                    <th>Budget Total</th>
+                                    <th>Dépensé</th>
+                                    <th>Reste</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for budget in budgets %}
+                                <tr>
+                                    <td>{{ budget.nom }}</td>
+                                    <td>
+                                        {{ budget.date_debut|date:"d/m/Y" }} - 
+                                        {% if budget.date_fin %}
+                                            {{ budget.date_fin|date:"d/m/Y" }}
+                                        {% else %}
+                                            ∞
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ budget.montant }} FCFA</td>
+                                    <td>{{ budget.montant|subtract:budget.montant_restant }} FCFA</td>
+                                    <td class="{% if budget.montant_restant < 0 %}text-danger{% else %}text-success{% endif %}">
+                                        {{ budget.montant_restant }} FCFA
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="{% url 'edit_budget' budget.id %}" class="btn btn-sm btn-outline-primary me-2">
+                                                <i class="fas fa-edit"></i> Ajuster
+                                            </a>
+                                            <a href="{% url 'delete_budget' budget.id %}" class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i> Supprimer
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="6" class="p-0">
+                                        <div class="progress" style="height: 8px; border-radius: 0;">
+                                            <div class="progress-bar bg-success" 
+                                                role="progressbar" 
+                                                style="width: {% widthratio budget.montant_restant budget.montant 100 %}%">
+                                            </div>
+                                            <div class="progress-bar bg-danger" 
+                                                role="progressbar" 
+                                                style="width: {% widthratio budget.montant|subtract:budget.montant_restant budget.montant 100 %}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
                     {% else %}
-                    <p class="text-muted mt-3">Aucun budget défini pour ce mois.</p>
+                    <p class="text-muted">Aucun budget défini pour ce mois.</p>
                     <a href="{% url 'add_budget' %}" class="btn btn-primary">Définir un budget</a>
                     {% endif %}
                 </div>
@@ -70,7 +112,7 @@
         </div>
     </div>
 
-    <!-- Section Dépenses Récentes -->
+    {% comment %} <!-- Section Dépenses Récentes -->
     <div class="row">
         <div class="col-md-12">
             <div class="card shadow-sm">
@@ -81,25 +123,19 @@
                         <table class="table table-bordered text-center">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Image</th>
                                     <th>Nom</th>
                                     <th>Montant</th>
+                                    <th>Budget</th>
                                     <th>Date</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for expense in expenses %}
                                 <tr>
-                                    <td>
-                                        {% if expense.image %}
-                                        <img src="{{ expense.image.url }}" alt="Reçu" style="max-height: 50px;">
-                                        {% else %}
-                                        <span class="text-muted">Pas d'image</span>
-                                        {% endif %}
-                                    </td>
                                     <td>{{ expense.nom }}</td>
                                     <td>{{ expense.montant }} FCFA</td>
-                                    <td>{{ expense.date }}</td>
+                                    <td>{{ expense.budget.nom|default:"Sans budget" }}</td>
+                                    <td>{{ expense.date|date:"d/m/Y" }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -111,6 +147,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 </div>
 {% endblock %}

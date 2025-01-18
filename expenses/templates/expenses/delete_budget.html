@@ -1,0 +1,28 @@
+{% extends 'expenses/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 class="card-title mb-4">Supprimer le budget</h3>
+            
+            <p class="lead">
+                Êtes-vous sûr de vouloir supprimer le budget "{{ budget.nom }}" ?
+            </p>
+            
+            <div class="alert alert-warning">
+                <p class="mb-0">
+                    Cette action est irréversible. Toutes les dépenses associées à ce budget seront conservées mais ne seront plus liées à un budget.
+                </p>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                <a href="{% url 'home' %}" class="btn btn-secondary">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

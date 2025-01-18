@@ -1,0 +1,141 @@
+{% extends 'expenses/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/forms.css' %}">
+
+<div class="container form-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card form-card">
+                <div class="card-body p-4">
+                    <div class="text-center mb-4">
+                        <i class="bi bi-wallet form-icon"></i>
+                        <h2 class="form-title">Ajouter un budget</h2>
+                        <p class="form-subtitle">Définissez votre budget pour mieux gérer vos dépenses</p>
+                    </div>
+                    
+                    <form method="post" class="needs-validation" enctype="multipart/form-data" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="form-group mb-3">
+                            <label for="{{ form.nom.id_for_label }}" class="form-label">Description</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-pencil"></i>
+                                </span>
+                                {{ form.nom }}
+                            </div>
+                            {% if form.nom.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.nom.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.montant.id_for_label }}" class="form-label">Montant</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-currency-euro"></i>
+                                </span>
+                                {{ form.montant }}
+                            </div>
+                            {% if form.montant.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.montant.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.validite.id_for_label }}" class="form-label">Validité</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-clock"></i>
+                                </span>
+                                {{ form.validite }}
+                            </div>
+                            {% if form.validite.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.validite.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="{{ form.date_debut.id_for_label }}" class="form-label">Date de début</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-calendar"></i>
+                                </span>
+                                {{ form.date_debut }}
+                            </div>
+                            {% if form.date_debut.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date_debut.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-3" id="date-fin-group" style="display: none;">
+                            <label for="{{ form.date_fin.id_for_label }}" class="form-label">Date de fin</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-calendar"></i>
+                                </span>
+                                {{ form.date_fin }}
+                            </div>
+                            {% if form.date_fin.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.date_fin.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="{{ form.image.id_for_label }}" class="form-label">Image</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="bi bi-image"></i>
+                                </span>
+                                {{ form.image }}
+                            </div>
+                            {% if form.image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.image.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success">Ajouter le budget</button>
+                            <a href="{% url 'home' %}" class="btn btn-secondary">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const validiteSelect = document.getElementById('validite-select');
+    const dateFinGroup = document.getElementById('date-fin-group');
+    
+    function toggleDateFin() {
+        if (validiteSelect.value === 'custom') {
+            dateFinGroup.style.display = 'block';
+        } else {
+            dateFinGroup.style.display = 'none';
+        }
+    }
+    
+    validiteSelect.addEventListener('change', toggleDateFin);
+    toggleDateFin(); // Initial state
+});
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,213 @@
+{% extends 'expenses/base.html' %}
+{% load static expense_extras %}
+
+{% block content %}
+<style>
+.expenses-details {
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+}
+
+.form-switch .form-check-input {
+    width: 3em;
+    height: 1.5em;
+    margin-top: 0.25em;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.form-switch .form-check-label {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-left: 0.5em;
+}
+</style>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Liste des Budgets</h2>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="detailsSwitch" checked>
+            <label class="form-check-label" for="detailsSwitch">
+                <i class="bi bi-list-ul me-1"></i>Détaillé
+            </label>
+        </div>
+    </div>
+
+    <!-- Liste des budgets -->
+    {% for detail in budget_details %}
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                {% if detail.budget.image %}
+                <img src="{{ detail.budget.image.url }}" alt="{{ detail.budget.nom }}" class="me-3 rounded" style="max-height: 40px;">
+                {% endif %}
+                <h5 class="mb-0">{{ detail.budget.nom }}</h5>
+            </div>
+            <div class="badge bg-light text-dark">
+                {{ detail.budget.date_debut|date:"d/m/Y" }} - 
+                {% if detail.budget.date_fin %}
+                    {{ detail.budget.date_fin|date:"d/m/Y" }}
+                {% else %}
+                    ∞
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Informations du budget -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Budget Total</h6>
+                            <h4 class="mb-0">{{ detail.budget.montant }} FCFA</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Dépensé</h6>
+                            <h4 class="mb-0">{{ detail.total_expenses }} FCFA</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card {% if detail.budget.montant_restant < 0 %}bg-danger text-white{% else %}bg-success text-white{% endif %}">
+                        <div class="card-body">
+                            <h6 class="card-title">Restant</h6>
+                            <h4 class="mb-0">{{ detail.budget.montant_restant }} FCFA</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Barre de progression -->
+            <div class="progress mb-4" style="height: 12px;">
+                <div class="progress-bar bg-success" 
+                    role="progressbar" 
+                    style="width: {% widthratio detail.budget.montant_restant detail.budget.montant 100 %}%">
+                </div>
+                <div class="progress-bar bg-danger" 
+                    role="progressbar" 
+                    style="width: {% widthratio detail.total_expenses detail.budget.montant 100 %}%">
+                </div>
+            </div>
+
+            <!-- Liste des dépenses -->
+            <div class="expenses-details">
+                <h6 class="mb-3">Dépenses associées :</h6>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Nom</th>
+                                <th>Montant</th>
+                                <th>Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in detail.expenses %}
+                            <tr>
+                                <td>{{ expense.date|date:"d/m/Y" }}</td>
+                                <td>{{ expense.nom }}</td>
+                                <td>{{ expense.montant }} FCFA</td>
+                                <td>
+                                    {% if expense.image %}
+                                    <img src="{{ expense.image.url }}" alt="Reçu" class="img-thumbnail" style="max-height: 50px;">
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Aucune dépense pour ce budget</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Dépenses sans budget -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+            <h5 class="mb-0">Dépenses sans budget</h5>
+        </div>
+        <div class="card-body">
+            <div class="expenses-details">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Nom</th>
+                                <th>Montant</th>
+                                <th>Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for expense in unbudgeted_expenses %}
+                            <tr>
+                                <td>{{ expense.date|date:"d/m/Y" }}</td>
+                                <td>{{ expense.nom }}</td>
+                                <td>{{ expense.montant }} FCFA</td>
+                                <td>
+                                    {% if expense.image %}
+                                    <img src="{{ expense.image.url }}" alt="Reçu" class="img-thumbnail" style="max-height: 50px;">
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">Aucune dépense sans budget</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript pour le switch -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const detailsSwitch = document.getElementById('detailsSwitch');
+    const expensesDetails = document.querySelectorAll('.expenses-details');
+
+    function toggleExpensesDetails() {
+        expensesDetails.forEach(detail => {
+            if (detailsSwitch.checked) {
+                detail.style.maxHeight = detail.scrollHeight + "px";
+                detail.style.opacity = "1";
+                detail.style.visibility = "visible";
+            } else {
+                detail.style.maxHeight = "0";
+                detail.style.opacity = "0";
+                detail.style.visibility = "hidden";
+            }
+        });
+    }
+
+    detailsSwitch.addEventListener('change', toggleExpensesDetails);
+    
+    // État initial
+    expensesDetails.forEach(detail => {
+        detail.style.maxHeight = detail.scrollHeight + "px";
+    });
+    toggleExpensesDetails();
+});
+</script>
+{% endblock %}
