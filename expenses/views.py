@@ -137,11 +137,8 @@ def add_expense(request):
                     )
                     
                     return render(request, 'expenses/add_expense.html', {'form': form})
-                
-                # Mettre à jour le montant restant du budget
-                budget.montant_restant -= depense.montant
-                budget.save()
             
+            # Sauvegarder la dépense (la mise à jour du budget est gérée dans le modèle Depense)
             depense.save()
             
             # Créer une entrée dans le journal d'activité
