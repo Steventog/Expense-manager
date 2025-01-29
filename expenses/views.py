@@ -1,7 +1,8 @@
 from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib import messages
 from .forms import UserRegistrationForm, BudgetForm, DepenseForm, UserProfileForm, BudgetAdjustForm
 from .models import Budget, Depense, Notification, ActionLog
